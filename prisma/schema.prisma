@@ -41,7 +41,7 @@ model Contract {
   dataCustodianEmail String
   ingestionMethod    String
   cronScheduler      String
-  tags               String
+  tags               String?
   sourceFormat       String
   isActive           Boolean  @default(true)
   createdAt          DateTime @default(now())
