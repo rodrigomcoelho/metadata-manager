@@ -18,6 +18,25 @@ import { UpdateGroupDto } from "./dto/update-groups.dto";
 @Controller("groups")
 export class GroupController {
   constructor(private readonly groupRepository: GroupsRepository) {}
+
+  @Get(":id")
+  @ApiOkResponse({ type: GroupEntity })
+  async getOne(@Param("id") id: string): Promise<GroupEntity> {
+    const group = await this.groupRepository.getOne(id);
+
+    if (!group) {
+      throw new NotFoundException(`Group ${id} not found.`);
+    }
+
+    return group;
+  }
+
+  @Get()
+  @ApiOkResponse({ type: GroupEntity, isArray: true })
+  async getAll(): Promise<GroupEntity[]> {
+    return await this.groupRepository.getAll();
+  }
+
   @Post()
   @ApiCreatedResponse({ type: GroupEntity })
   async create(@Body() createGroupDto: CreateGroupDto): Promise<GroupEntity> {
@@ -37,24 +56,6 @@ export class GroupController {
     }
 
     return group;
-  }
-
-  @Get(":id")
-  @ApiOkResponse({ type: GroupEntity })
-  async getOne(@Param("id") id: string): Promise<GroupEntity> {
-    const group = await this.groupRepository.getOne(id);
-
-    if (!group) {
-      throw new NotFoundException(`Group ${id} not found.`);
-    }
-
-    return group;
-  }
-
-  @Get()
-  @ApiOkResponse({ type: GroupEntity, isArray: true })
-  async getAll(): Promise<GroupEntity[]> {
-    return await this.groupRepository.getAll();
   }
 
   @Delete(":id")

@@ -22,26 +22,6 @@ export class BusinessUnitsController {
     private readonly businessUnitRepository: BusinessUnitsRepository,
   ) {}
 
-  @Post()
-  @ApiCreatedResponse({ type: BusinessUnitEntity })
-  async create(
-    @Body() createBusinessUnitDTO: createBusinessUnitDto,
-  ): Promise<BusinessUnit> {
-    const businessUnit = await this.businessUnitRepository.create(
-      createBusinessUnitDTO,
-    );
-
-    return businessUnit;
-  }
-
-  @Get()
-  @ApiOkResponse({ type: BusinessUnitEntity, isArray: true })
-  async getAll(): Promise<BusinessUnit[]> {
-    const businessUnits = await this.businessUnitRepository.findAll();
-
-    return businessUnits;
-  }
-
   @Get(":id")
   @ApiOkResponse({ type: BusinessUnitEntity })
   async getOne(@Param("id") id: string): Promise<BusinessUnit> {
@@ -52,6 +32,14 @@ export class BusinessUnitsController {
     }
 
     return businessUnit;
+  }
+
+  @Get()
+  @ApiOkResponse({ type: BusinessUnitEntity, isArray: true })
+  async getAll(): Promise<BusinessUnit[]> {
+    const businessUnits = await this.businessUnitRepository.findAll();
+
+    return businessUnits;
   }
 
   @Patch(":id")
@@ -65,6 +53,18 @@ export class BusinessUnitsController {
     if (!businessUnit) {
       throw new NotFoundException(`Business Unit ${id} not found.`);
     }
+
+    return businessUnit;
+  }
+
+  @Post()
+  @ApiCreatedResponse({ type: BusinessUnitEntity })
+  async create(
+    @Body() createBusinessUnitDTO: createBusinessUnitDto,
+  ): Promise<BusinessUnit> {
+    const businessUnit = await this.businessUnitRepository.create(
+      createBusinessUnitDTO,
+    );
 
     return businessUnit;
   }
