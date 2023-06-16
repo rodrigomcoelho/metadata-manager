@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String
+  slackId  String
+  group    Group?  @relation(fields: [groupId], references: [id])
+  groupId  String?
+  isActive Boolean @default(true)
+}
+
+model Group {
+  id          String  @id @default(uuid())
+  description String
+  email       String?
+  slackId     String
+  users       User[]
+  isActive    Boolean @default(true)
+}
+
+model BusinessUnit {
+  id        String   @id @default(uuid())
+  code      String
+  name      String
+  createdAt DateTime @default(now())
+}
+
+model Contract {
+  id                 String  @id @default(uuid())
+  externalId         String  @unique
+  dataOwner          String
+  dataOwnerEmail     String
+  dataCustodianEmail String
+  ingestionMethod    String
+  cronScheduler      String
+  tags               String
+  sourceFormat       String
+  isActive           Boolean @default(true)
+}
+
+model ContractField {
+  id                     String          @id @default(uuid())
+  contractId             String
+  fieldName              String
+  fieldType              String
+  fieldMode              String
+  fieldDescription       String
+  fieldParentId          String?
+  contractFields         ContractField?  @relation("ContractFields", fields: [fieldParentId], references: [id])
+  contractChildrenFields ContractField[] @relation("ContractFields")
+
+  @@index([contractId])
+}
