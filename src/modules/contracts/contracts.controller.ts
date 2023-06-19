@@ -8,7 +8,13 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from "@nestjs/swagger";
 import { ContractEntity } from "./entities/contract.entity";
 import { CreateContractsDto } from "./dto/create-contracts.dto";
 import { ContractRepository } from "./repositories/contracts.repository";
@@ -21,6 +27,8 @@ export class ContractsController {
 
   @Get("external/:externalId")
   @ApiOkResponse({ type: ContractEntity })
+  @ApiNotFoundResponse({ description: "Contract not found" })
+  @ApiParam({ name: "externalId", description: "External ID of the contract" })
   async getExternalContract(
     @Param("externalId") externalId: string,
   ): Promise<ContractEntity> {
@@ -34,6 +42,8 @@ export class ContractsController {
 
   @Get(":id")
   @ApiOkResponse({ type: ContractEntity })
+  @ApiNotFoundResponse({ description: "Contract not found" })
+  @ApiParam({ name: "id", description: "ID of the contract" })
   async getOne(@Param("id") id: string): Promise<ContractEntity> {
     const contract = await this.contractRepository.findById(id);
 
@@ -58,6 +68,8 @@ export class ContractsController {
 
   @Patch(":id")
   @ApiCreatedResponse({ type: ContractEntity })
+  @ApiNotFoundResponse({ description: "Contract not found" })
+  @ApiParam({ name: "id", description: "ID of the contract" })
   async update(
     @Param("id") id: string,
     @Body() updateContractsDto: UpdateContractsDto,
@@ -74,6 +86,8 @@ export class ContractsController {
 
   @Delete(":id")
   @ApiOkResponse({ type: ContractEntity })
+  @ApiNotFoundResponse({ description: "Contract not found" })
+  @ApiParam({ name: "id", description: "ID of the contract" })
   async delete(@Param("id") id: string): Promise<ContractEntity> {
     const contract = await this.contractRepository.deleteById(id);
 
