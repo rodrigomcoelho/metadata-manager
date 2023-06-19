@@ -1,3 +1,4 @@
+import { ParseUUIDPipe } from "@nestjs/common";
 import {
   Body,
   Controller,
@@ -8,8 +9,12 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { BusinessUnit } from "@prisma/client";
+import {
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import { createBusinessUnitDto } from "./dto/create-businessUnit.dto";
 import { BusinessUnitsRepository } from "./repositories/businessUnits.repository";
 import { BusinessUnitEntity } from "./entities/businessUnits.entity";
@@ -24,7 +29,10 @@ export class BusinessUnitsController {
 
   @Get(":id")
   @ApiOkResponse({ type: BusinessUnitEntity })
-  async getOne(@Param("id") id: string): Promise<BusinessUnit> {
+  @ApiNotFoundResponse({ description: "Not found" })
+  async getOne(
+    @Param("id", ParseUUIDPipe) id: string,
+  ): Promise<BusinessUnitEntity> {
     const businessUnit = await this.businessUnitRepository.findOne(id);
 
     if (!businessUnit) {
@@ -36,7 +44,7 @@ export class BusinessUnitsController {
 
   @Get()
   @ApiOkResponse({ type: BusinessUnitEntity, isArray: true })
-  async getAll(): Promise<BusinessUnit[]> {
+  async getAll(): Promise<BusinessUnitEntity[]> {
     const businessUnits = await this.businessUnitRepository.findAll();
 
     return businessUnits;
@@ -44,11 +52,15 @@ export class BusinessUnitsController {
 
   @Patch(":id")
   @ApiCreatedResponse({ type: BusinessUnitEntity })
+  @ApiNotFoundResponse({ description: "Not found" })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body() updatedDto: UpdateBusinessUnitDto,
-  ): Promise<BusinessUnit> {
-    const businessUnit = this.businessUnitRepository.update(id, updatedDto);
+  ): Promise<BusinessUnitEntity> {
+    const businessUnit = await this.businessUnitRepository.update(
+      id,
+      updatedDto,
+    );
 
     if (!businessUnit) {
       throw new NotFoundException(`Business Unit ${id} not found.`);
@@ -61,7 +73,7 @@ export class BusinessUnitsController {
   @ApiCreatedResponse({ type: BusinessUnitEntity })
   async create(
     @Body() createBusinessUnitDTO: createBusinessUnitDto,
-  ): Promise<BusinessUnit> {
+  ): Promise<BusinessUnitEntity> {
     const businessUnit = await this.businessUnitRepository.create(
       createBusinessUnitDTO,
     );
@@ -71,7 +83,16 @@ export class BusinessUnitsController {
 
   @Delete(":id")
   @ApiOkResponse({ type: BusinessUnitEntity })
-  async remove(@Param("id") id: string): Promise<BusinessUnit> {
-    return this.businessUnitRepository.delete(id);
+  @ApiNotFoundResponse({ description: "Not found" })
+  async remove(
+    @Param("id", ParseUUIDPipe) id: string,
+  ): Promise<BusinessUnitEntity> {
+    const businessUnit = await this.businessUnitRepository.delete(id);
+
+    if (!businessUnit) {
+      throw new NotFoundException(`Business Unit ${id} not found.`);
+    }
+
+    return businessUnit;
   }
 }
