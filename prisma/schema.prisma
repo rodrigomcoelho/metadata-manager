@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  name     String
-  email    String
-  slackId  String
-  group    Group?  @relation(fields: [groupId], references: [id])
-  groupId  String?
-  isActive Boolean @default(true)
+  id             String  @id @default(uuid())
+  name           String
+  email          String  @unique
+  hashedPassword String
+  slackId        String
+  group          Group?  @relation(fields: [groupId], references: [id])
+  groupId        String?
+  isActive       Boolean @default(true)
 }
 
 model Group {
