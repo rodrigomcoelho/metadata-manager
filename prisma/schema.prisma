@@ -35,8 +35,8 @@ model BusinessUnit {
 }
 
 model Contract {
-  id                 String   @id @default(uuid())
-  externalId         String   @unique
+  id                 String          @id @default(uuid())
+  externalId         String          @unique
   dataOwner          String
   dataOwnerEmail     String
   dataCustodianEmail String
@@ -44,14 +44,16 @@ model Contract {
   cronScheduler      String
   tags               String?
   sourceFormat       String
-  isActive           Boolean  @default(true)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  isActive           Boolean         @default(true)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  contractField      ContractField[]
 }
 
 model ContractField {
   id                     String          @id @default(uuid())
   contractId             String
+  contract               Contract        @relation(fields: [contractId], references: [id])
   fieldName              String
   fieldType              String
   fieldMode              String
